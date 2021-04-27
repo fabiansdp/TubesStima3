@@ -88,18 +88,30 @@ class TaskController extends Controller
     function addTask(Request $req){
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
-        $tanggalPattern = '/(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])/';
+        $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
+        $topikPattern = '/([0-9]{4}\s)(.*)[\s][0-9]{4}\b/';
         $fromreq = $req->value;
         $jenis = array("Kuis", "Ujian", "Tucil", "Tubes", );
 
-        if (preg_match($kodeMatkulPattern, $fromreq, $matkul) && preg_match($jenisTugasPattern, $fromreq)) {
+        if (preg_match($kodeMatkulPattern, $fromreq, $matkul) 
+            && preg_match($jenisTugasPattern, $fromreq, $jenis) 
+            && preg_match($tanggalPattern, $fromreq, $tanggal)
+        ) {
+            preg_match($topikPattern, $fromreq, $topik);
             $task = new Task;
             $task->user_id = 0;
-            $task->deadline = null;
+            $task->deadline = $tanggal[0];
             $task->mata_kuliah = $matkul[0];
-            // $task->kata_penting_id = ;
-            // $task->topik = ;
-            echo $task->mata_kuliah;
+            $task->kata_penting_id = $jenis[0];
+            $task->topik = $topik[2];
+
+            // echo ($task->deadline);
+            // echo ($task->mata_kuliah);
+            // echo ($task->topik);
+            // echo ($task->kata_penting_id);
+
+        } else {
+            return redirect("/");
         }
 
         // Cari instruksi kata penting
