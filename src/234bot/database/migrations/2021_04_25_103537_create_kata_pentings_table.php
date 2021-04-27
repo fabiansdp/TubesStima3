@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKataPentingTable extends Migration
+class CreateKataPentingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateKataPentingTable extends Migration
      */
     public function up()
     {
-        Schema::create('kata_penting', function (Blueprint $table) {
+        Schema::create('kata_pentings', function (Blueprint $table) {
             $table->id();
             $table->string('kata_penting')->unique();
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateKataPentingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kata_penting');
+        Schema::dropIfExists('kata_pentings');
     }
 }

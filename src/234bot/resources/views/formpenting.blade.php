@@ -61,7 +61,7 @@
                 </div> <!-- end chat-history -->
             
                 <div class="chat-message clearfix">
-                    <form action="/" method="POST">
+                    <form action="penting" method="POST">
                         @csrf
                         <textarea name="value" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
                                 
