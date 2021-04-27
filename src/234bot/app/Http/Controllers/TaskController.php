@@ -86,19 +86,25 @@ class TaskController extends Controller
     }
 
     function addTask(Request $req){
-        $task = new Task;
+        $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
+        $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
+        $tanggalPattern = '/(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])/';
         $fromreq = $req->value;
+
+        if (preg_match($kodeMatkulPattern, $fromreq, $matkul) && preg_match($jenisTugasPattern, $fromreq)) {
+            $task = new Task;
+            $task->user_id = 0;
+            $task->deadline = null;
+            $task->mata_kuliah = $matkul[0];
+            // $task->kata_penting_id = ;
+            // $task->topik = ;
+            echo $task->mata_kuliah;
+        }
 
         // Cari instruksi kata penting
         if (TaskController::KMPSearch("deadline", $fromreq)) {
             echo "deadline";
         }
-        
-        $task->user_id = (int)substr($fromreq,0,1);
-        $task->deadline = null;
-        $task->mata_kuliah = substr($fromreq,4,6);
-        $task->kata_penting_id = (int)substr($fromreq,1,2);
-        $task->topik = substr($fromreq,8,10);
         
         // $task->save();
 
