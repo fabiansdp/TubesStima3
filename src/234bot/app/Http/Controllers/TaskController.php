@@ -91,7 +91,6 @@ class TaskController extends Controller
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
         $topikPattern = '/([0-9]{4}\s)(.*)[\s][0-9]{4}\b/';
         $fromreq = $req->value;
-        $jenis = array("Kuis", "Ujian", "Tucil", "Tubes", );
 
         if (preg_match($kodeMatkulPattern, $fromreq, $matkul) 
             && preg_match($jenisTugasPattern, $fromreq, $jenis) 
@@ -99,58 +98,51 @@ class TaskController extends Controller
         ) {
             preg_match($topikPattern, $fromreq, $topik);
             $task = new Task;
-            $task->user_id = 0;
+            $task->user_id = 0; // sementara
             $task->deadline = $tanggal[0];
             $task->mata_kuliah = $matkul[0];
-            $task->kata_penting_id = $jenis[0];
+            $task->jenis_topik = ucwords(strtolower($jenis[0]));
             $task->topik = $topik[2];
+            $task->save();
 
-            // echo ($task->deadline);
-            // echo ($task->mata_kuliah);
-            // echo ($task->topik);
-            // echo ($task->kata_penting_id);
-
+            return redirect('/');
         } else {
-            return redirect("/");
-        }
+            if (TaskController::KMPSearch("deadline", $fromreq)) {
+                echo "deadline";
+                // 2
+                if (TaskController::KMPSearch("sejauh", $fromreq))
+                    echo "sejauh";
+                else if (TaskController::KMPSearch("antara", $fromreq))
+                    echo "antara";
+                else if (TaskController::KMPSearch("depan", $fromreq)){
+                    if (TaskController::KMPSearch("minggu", $fromreq))
+                        echo "minggu";
+                    else if (TaskController::KMPSearch("hari", $fromreq))
+                        echo "hari";
+                    echo "depan";
+                }
+                else if (TaskController::KMPSearch("hari ini", $fromreq))
+                    echo "hari ini";
 
-        // Cari instruksi kata penting
-        if (TaskController::KMPSearch("deadline", $fromreq)) {
-            echo "deadline";
-            // 2
-            if (TaskController::KMPSearch("sejauh", $fromreq))
-                echo "sejauh";
-            else if (TaskController::KMPSearch("antara", $fromreq))
-                echo "antara";
-            else if (TaskController::KMPSearch("depan", $fromreq)){
-                if (TaskController::KMPSearch("minggu", $fromreq))
-                    echo "minggu";
-                else if (TaskController::KMPSearch("hari", $fromreq))
-                    echo "hari";
-                echo "depan";
+                // 3
+                else if (TaskController::KMPSearch("kapan", $fromreq))
+                    echo "kapan loh";
+
+                // 4
+                else if (TaskController::KMPSearch("diundur", $fromreq))
+                    echo "diundur";
+
+                // 5
+                else if (TaskController::KMPSearch("selesai", $fromreq))
+                    echo "selesai";
             }
-            else if (TaskController::KMPSearch("hari ini", $fromreq))
-                echo "hari ini";
 
-            // 3
-            else if (TaskController::KMPSearch("kapan", $fromreq))
-                echo "kapan loh";
-
-            // 4
-            else if (TaskController::KMPSearch("diundur", $fromreq))
-                echo "diundur";
-
-            // 5
-            else if (TaskController::KMPSearch("selesai", $fromreq))
-                echo "selesai";
+            // 6 
+            else if (TaskController::KMPSearch("bisa", $fromreq))
+                echo "help";
+            else 
+                echo "maaf command tidak diketahui";
+            // return redirect("/");
         }
-
-        // 6 
-        else if (TaskController::KMPSearch("bisa", $fromreq))
-            echo "help";
-        
-        // $task->save();
-
-        // return redirect('/');
     }
 }

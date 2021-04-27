@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\KataPentingController;
 use App\Http\Controllers\TaskController;
 
 /*
@@ -22,7 +21,3 @@ use App\Http\Controllers\TaskController;
 Route::view('/','welcome');
 Route::post('/',[TaskController::class,'addTask']);
 Route::get('datatask', [TaskController::class,'getTask']);
-
-Route::get('datapenting', [KataPentingController::class,'getData']);
-Route::view('penting','formpenting');
-Route::post('penting',[KataPentingController::class, 'addData']);

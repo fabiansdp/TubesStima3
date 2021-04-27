@@ -19,8 +19,7 @@ class CreateTasksTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamp('deadline')->nullable();
             $table->string('mata_kuliah');
-            $table->unsignedBigInteger('kata_penting_id');
-            $table->foreign('kata_penting_id')->references('id')->on('kata_pentings');
+            $table->string('jenis_task');
             $table->string('topik');
             $table->timestamps();
         });
