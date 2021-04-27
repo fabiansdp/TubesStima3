@@ -7,23 +7,7 @@ use App\Models\Task;
 
 class TaskController extends Controller
 {
-    function getTask(){
-        return Task::all();
-    }
-
-    function addTask(Request $req){
-        $task = new Task;
-        $fromreq = $req->value;
-        $task->user_id = (int)substr($fromreq,0,1);
-        $task->deadline = null;
-        $task->mata_kuliah = substr($fromreq,4,6);
-        $task->kata_penting_id = (int)substr($fromreq,1,2);
-        $task->topik = substr($fromreq,8,10);
-        $task->save();
-        return redirect('/');
-    }
-    
-    function KMPSearch($pat, $txt)
+    static function KMPSearch($pat, $txt)
     {
         $M = strlen($pat);
         $N = strlen($txt);
@@ -33,7 +17,7 @@ class TaskController extends Controller
         $lps=array_fill(0,$M,0);
 
         // Preprocess the pattern (calculate lps[] array)
-        computeLPSArray($pat, $M, $lps);
+        TaskController::computeLPSArray($pat, $M, $lps);
 
         $i = 0; // index for txt[]
         $j = 0; // index for pat[]
@@ -62,7 +46,7 @@ class TaskController extends Controller
     }
 
     // Fills lps[] for given patttern pat[0..M-1]
-    function computeLPSArray($pat, $M, &$lps)
+    static function computeLPSArray($pat, $M, &$lps)
     {
         // length of the previous longest prefix suffix
         $len = 0;
@@ -95,5 +79,29 @@ class TaskController extends Controller
                 }
             }
         }
+    }
+
+    function getTask(){
+        return Task::all();
+    }
+
+    function addTask(Request $req){
+        $task = new Task;
+        $fromreq = $req->value;
+
+        // Cari instruksi kata penting
+        if (TaskController::KMPSearch("deadline", $fromreq)) {
+            echo "deadline";
+        }
+        
+        $task->user_id = (int)substr($fromreq,0,1);
+        $task->deadline = null;
+        $task->mata_kuliah = substr($fromreq,4,6);
+        $task->kata_penting_id = (int)substr($fromreq,1,2);
+        $task->topik = substr($fromreq,8,10);
+        
+        // $task->save();
+
+        // return redirect('/');
     }
 }
