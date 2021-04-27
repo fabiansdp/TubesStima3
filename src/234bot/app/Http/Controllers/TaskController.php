@@ -90,6 +90,7 @@ class TaskController extends Controller
         $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
         $tanggalPattern = '/(0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])/';
         $fromreq = $req->value;
+        $jenis = array("Kuis", "Ujian", "Tucil", "Tubes", );
 
         if (preg_match($kodeMatkulPattern, $fromreq, $matkul) && preg_match($jenisTugasPattern, $fromreq)) {
             $task = new Task;
@@ -104,7 +105,37 @@ class TaskController extends Controller
         // Cari instruksi kata penting
         if (TaskController::KMPSearch("deadline", $fromreq)) {
             echo "deadline";
+            // 2
+            if (TaskController::KMPSearch("sejauh", $fromreq))
+                echo "sejauh";
+            else if (TaskController::KMPSearch("antara", $fromreq))
+                echo "antara";
+            else if (TaskController::KMPSearch("depan", $fromreq)){
+                if (TaskController::KMPSearch("minggu", $fromreq))
+                    echo "minggu";
+                else if (TaskController::KMPSearch("hari", $fromreq))
+                    echo "hari";
+                echo "depan";
+            }
+            else if (TaskController::KMPSearch("hari ini", $fromreq))
+                echo "hari ini";
+
+            // 3
+            else if (TaskController::KMPSearch("kapan", $fromreq))
+                echo "kapan loh";
+
+            // 4
+            else if (TaskController::KMPSearch("diundur", $fromreq))
+                echo "diundur";
+
+            // 5
+            else if (TaskController::KMPSearch("selesai", $fromreq))
+                echo "selesai";
         }
+
+        // 6 
+        else if (TaskController::KMPSearch("bisa", $fromreq))
+            echo "help";
         
         // $task->save();
 
