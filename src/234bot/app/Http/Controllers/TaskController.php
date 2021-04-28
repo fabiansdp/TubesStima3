@@ -107,24 +107,19 @@ class TaskController extends Controller
         ]);
     }
 
-    function getDlBetweenDates($tanggal1,$tanggal2){
-        $task = DB::table('tasks')
-            ->whereBetween('deadline', [$tanggal1,$tanggal2])
-            ->orderBy('deadline')
-            ->get();
-        return response()->json([
-            'type' => 'Deadline By Date',
-            'data' => $task
-        ]);
-
-    }
-
-    function getJenisDlBetweenDates($tanggal1,$tanggal2, $jenis){
-        $task = DB::table('tasks')
-            ->where('jenis_task', $jenis)
-            ->whereBetween('deadline', [$tanggal1,$tanggal2])
-            ->orderBy('deadline')
-            ->get();
+    function getDlBetweenDates($tanggal1,$tanggal2, $jenis=NULL){
+        if ($jenis == NULL){
+            $task = DB::table('tasks')
+                ->whereBetween('deadline', [$tanggal1,$tanggal2])
+                ->orderBy('deadline')
+                ->get();
+        } else {
+            $task = DB::table('tasks')
+                ->where('jenis_task', $jenis)
+                ->whereBetween('deadline', [$tanggal1,$tanggal2])
+                ->orderBy('deadline')
+                ->get();
+        }
         return response()->json([
             'type' => 'Deadline By Date',
             'data' => $task
