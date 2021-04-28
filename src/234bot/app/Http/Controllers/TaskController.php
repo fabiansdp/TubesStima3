@@ -107,6 +107,8 @@ class TaskController extends Controller
     }
 
     function decideTask(Request $req){
+        // asumsi sudah login
+        $user_id = $req->user()->id;
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/kuis|praktikum|tu(bes|cil)|ujian/';
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
@@ -119,7 +121,7 @@ class TaskController extends Controller
             && preg_match($tanggalPattern, $fromreq, $tanggal)
         ) {
             preg_match($topikPattern, $fromreq, $topik);
-            TaskController::addTask(2, $tanggal[0], strtoupper($matkul[0]), ucwords(strtolower($jenis[0])), ucwords($topik[2]));
+            TaskController::addTask($user_id, $tanggal[0], strtoupper($matkul[0]), ucwords(strtolower($jenis[0])), ucwords($topik[2]));
 
             return back();
         } else {

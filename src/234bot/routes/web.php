@@ -21,3 +21,6 @@ use App\Http\Controllers\TaskController;
 Route::view('/','welcome');
 Route::post('/',[TaskController::class,'decideTask']);
 Route::get('datatask', [TaskController::class,'getTask']);
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
