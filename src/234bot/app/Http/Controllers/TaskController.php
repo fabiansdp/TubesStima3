@@ -223,13 +223,32 @@ class TaskController extends Controller
                             getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2);
                         }
                     }
-                }
                 else if (TaskController::KMPSearch("depan", $fromreq)){
-                    if (TaskController::KMPSearch("minggu", $fromreq))
-                        echo "minggu";
-                    else if (TaskController::KMPSearch("hari", $fromreq))
-                        echo "hari";
-                    echo "depan";
+                    $STR = explode(" ", $fromreq);
+                    $currDate = date("Y-m-d");
+                    if (TaskController::KMPSearch("minggu", $fromreq)){
+                        $N= array_search("minggu",$STR);
+                        $N= $N-1;
+                        $date = date("Y-m-d", strtotime("+$N week"));
+                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                            getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
+                        }
+                        else{
+                            getDlBetweenDates($user_id,$currDate,$date);
+                        }
+                        
+                    }
+                    else if (TaskController::KMPSearch("hari", $fromreq)){
+                        $N= array_search("hari",$STR);
+                        $N= $N-1;
+                        $date = date("Y-m-d", strtotime("+$N day"));
+                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                            getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
+                        }
+                        else{
+                            getDlBetweenDates($user_id,$currDate,$date);
+                        }
+                    } 
                 }
                 else if (TaskController::KMPSearch("hari ini", $fromreq)){
                     $currDate = date("Y-m-d");
