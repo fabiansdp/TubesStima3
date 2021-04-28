@@ -85,7 +85,17 @@ class TaskController extends Controller
         return Task::all();
     }
 
-    function addTask(Request $req){
+    function addTask($userid, $deadline, $matkul, $jenis, $topik) {
+        $task = new Task;
+        $task->user_id = $userid; // sementara
+        $task->deadline = $deadline;
+        $task->mata_kuliah = $matkul;
+        $task->jenis_task = $jenis;
+        $task->topik = $topik;
+        $task->save();
+    }
+
+    function decideTask(Request $req){
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
@@ -97,13 +107,7 @@ class TaskController extends Controller
             && preg_match($tanggalPattern, $fromreq, $tanggal)
         ) {
             preg_match($topikPattern, $fromreq, $topik);
-            $task = new Task;
-            $task->user_id = 1; // sementara
-            $task->deadline = $tanggal[0];
-            $task->mata_kuliah = strtoupper($matkul[0]);
-            $task->jenis_task = ucwords(strtolower($jenis[0]));
-            $task->topik = ucwords($topik[2]);
-            $task->save();
+            TaskController::addTask(1, $tanggal[0], strtoupper($matkul[0]), ucwords(strtolower($jenis[0])), ucwords($topik[2]));
 
             return redirect('/');
         } else {
