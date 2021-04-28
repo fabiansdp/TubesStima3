@@ -30,7 +30,7 @@
         <div class="container clearfix">
             <div class="chat">
                 <div class="chat-header clearfix">
-                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg" alt="avatar" />
+                    <img src="rafif.jpg" alt="avatar" width="48px"/>
                     
                     <div class="chat-about">
                         <div class="chat-with">ChatBot Tugas</div>
@@ -74,7 +74,7 @@
             <li class="clearfix">
                 <div class="message-data align-right">
                     <span class="message-data-time" >Today</span> &nbsp; &nbsp;
-                    <span class="message-data-name" >User</span> <i class="fa fa-circle me"></i>
+                    <span class="message-data-name" >@{{time}}, User</span> <i class="fa fa-circle me"></i>
                 </div>
                 <div class="message other-message float-right">
                     @{{messageOutput}}
@@ -86,7 +86,7 @@
             <li>
                 <div class="message-data">
                     <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
-                    <span class="message-data-time">Today</span>
+                    <span class="message-data-time">@{{time}}, Today</span>
                 </div>
                 <div class="message my-message">
                     @{{response}}
@@ -94,11 +94,98 @@
             </li>
         </script>
 
+        <script id="message-response-template2" type="text/x-handlebars-template">
+            <li>
+                <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-time">@{{time}}, Today</span>
+                </div>
+                <div class="message my-message">
+                    <p>Daftar Deadline</p>
+                    <ol>
+                        @{{#each response}}
+                            <li>
+                                <p>(ID: @{{id}}) @{{jenis_task}}  @{{mata_kuliah}} @{{topik}}</p>
+                                <p>Deadline: @{{deadline}}</p>
+                            </li>
+                        @{{/each}}
+                    </ol>
+                </div>
+            </li>
+        </script>
+
+        <script id="message-response-template3" type="text/x-handlebars-template">
+            <li>
+                <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-time">@{{time}}, Today</span>
+                </div>
+                <div class="message my-message">
+                    <p>Daftar Deadline</p>
+                    <ol>
+                        @{{#each response}}
+                            <li>
+                                <p>Topik: @{{topik}} </p>
+                                <p>Deadline: @{{deadline}}</p>
+                            </li>
+                        @{{/each}}
+                    </ol>
+                </div>
+            </li>
+        </script>
+
+        <script id="message-response-template4" type="text/x-handlebars-template">
+            <li>
+                <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-time">@{{time}}, Today</span>
+                </div>
+                <div class="message my-message">
+                    <p>Fitur</p>
+                    <ol>
+                        <li>
+                            <p>Menambahkan tugas baru</p>
+                        </li>
+                        <li>
+                            <p>Melihat daftar tugas keseluruhan, berdasarkan waktu, dan berdasarkan jenis tugas</p>
+                        </li>
+                        <li>
+                            <p>Menghapus tugas</p>
+                        </li>
+                        <li>
+                            <p>Mengupdate tugas</p>
+                        </li>
+                        <li>
+                            <p>Melihat deadline tugas</p>
+                        </li>
+                    </ol>
+                    <p>Daftar kata penting</p>
+                    <ol>
+                        <li>
+                            <p>Tubes</p>
+                        </li>
+                        <li>
+                            <p>Tucil</p>
+                        </li>
+                        <li>
+                            <p>Ujian</p>
+                        </li>
+                        <li>
+                            <p>Praktikum</p>
+                        </li>
+                        <li>
+                            <p>Kuis</p>
+                        </li>
+                    </ol>
+                </div>
+            </li>
+        </script>
+
         <script>
             var chat = {
-                init: function(message, response) {
+                init: function(message, type, response) {
                     this.cacheDOM();
-                    this.render(message, response);
+                    this.render(message, type, response);
                 },
                 cacheDOM: function() {
                     this.$chatHistory = $('.chat-history');
@@ -106,26 +193,40 @@
                     this.$textarea = $('#message-to-send');
                     this.$chatHistoryList =  this.$chatHistory.find('ul');
                 },
-                render: function(message, response) {
+                render: function(message, type, response) {
                     this.scrollToBottom();
                     var template = Handlebars.compile( $("#message-template").html());
                     var context = { 
-                        messageOutput: message
+                        messageOutput: message,
+                        time: this.getCurrentTime()
                     };
 
                     this.$chatHistoryList.append(template(context));
                     this.scrollToBottom();
                     
                     // responses
-                    var templateResponse = Handlebars.compile( $("#message-response-template").html());
+                    if (type == "deadline") {
+                        var templateResponse = Handlebars.compile( $("#message-response-template2").html());
+                    } else if (type == "deadlineTgl"){
+                        var templateResponse = Handlebars.compile( $("#message-response-template3").html());
+                    } else if (type == "help"){
+                        var templateResponse = Handlebars.compile( $("#message-response-template4").html());
+                    } else {
+                        var templateResponse = Handlebars.compile( $("#message-response-template").html());
+                    }
                     var contextResponse = { 
-                        response: response
+                        response: response,
+                        time: this.getCurrentTime()
                     };
-                    
+
                     setTimeout(function() {
                         this.$chatHistoryList.append(templateResponse(contextResponse));
                         this.scrollToBottom();
                     }.bind(this), 1500);
+                },
+                getCurrentTime: function() {
+                    return new Date().toLocaleTimeString().
+                        replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
                 },
                 scrollToBottom: function() {
                     this.$chatHistory.scrollTop(this.$chatHistory[0].scrollHeight);
@@ -147,12 +248,8 @@
                         "_token": "{{ csrf_token() }}",
                     },
                     success:function(response){
-                        if (response.type == "deadline") {
-                            console.log(response.data);
-                            chat.init(message, "Deadline:")
-                        } else {
-                            chat.init(message, response.msg);
-                        }
+                        console.log(response.msg)
+                        chat.init(message, response.type, response.msg);
                         $("#message-to-send").val('');
                     },
                 });
@@ -174,13 +271,7 @@
                             "_token": "{{ csrf_token() }}",
                         },
                         success:function(response){
-                            console.log(response)
-                            if (response.type == "deadline") {
-                                console.log(response.data);
-                                chat.init(message, "Deadline:")
-                            } else {
-                                chat.init(message, response.msg);
-                            }
+                            chat.init(message, response.type, response.msg);
                             $("#message-to-send").val('');
                         },
                     });   

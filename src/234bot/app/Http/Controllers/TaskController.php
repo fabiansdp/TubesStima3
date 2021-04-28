@@ -119,6 +119,7 @@ class TaskController extends Controller
                 ->orderBy('deadline')
                 ->get();
         }
+
         return $task;
     }
 
@@ -217,7 +218,7 @@ class TaskController extends Controller
 
                     return response()->json([
                         'type' => 'deadline',
-                        'data' => $task
+                        'msg' => $task
                     ]);
                 }
                 else {
@@ -225,7 +226,7 @@ class TaskController extends Controller
 
                     return response()->json([
                         'type' => 'deadline',
-                        'data' => $task
+                        'msg' => $task
                     ]);
                 }
             }
@@ -238,7 +239,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                     else{
@@ -246,7 +247,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                 }
@@ -256,7 +257,7 @@ class TaskController extends Controller
                         
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                     else{
@@ -264,7 +265,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                 }
@@ -280,7 +281,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                     else{
@@ -288,7 +289,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                     
@@ -302,7 +303,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                     else{
@@ -310,7 +311,7 @@ class TaskController extends Controller
 
                         return response()->json([
                             'type' => 'deadline',
-                            'data' => $task
+                            'msg' => $task
                         ]);
                     }
                 } 
@@ -322,7 +323,7 @@ class TaskController extends Controller
 
                     return response()->json([
                         'type' => 'deadline',
-                        'data' => $task
+                        'msg' => $task
                     ]);
                 } 
                 else {
@@ -330,7 +331,7 @@ class TaskController extends Controller
 
                     return response()->json([
                         'type' => 'deadline',
-                        'data' => $task
+                        'msg' => $task
                     ]);
                 }
             }
@@ -341,8 +342,8 @@ class TaskController extends Controller
                 $task = TaskController::showDlTask($user_id,$jenis,$matkul);
 
                 return response()->json([
-                    'type' => 'deadline',
-                    'data' => $task
+                    'type' => 'deadlineTgl',
+                    'msg' => $task
                 ]);
             }
         }
