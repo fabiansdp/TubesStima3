@@ -41,24 +41,13 @@
                 
                 <div class="chat-history">
                     <ul>
-                        <li class="clearfix">
-                            <div class="message-data align-right">
-                                <span class="message-data-time" >10:10 AM, Today</span> &nbsp; &nbsp;
-                                <span class="message-data-name" >User</span> <i class="fa fa-circle me"></i>
-                            
-                            </div>
-                            <div class="message other-message float-right">
-                                Hi Vincent, how are you? How is the project coming along?
-                            </div>
-                        </li>
-                        
                         <li>
                             <div class="message-data">
-                                <span class="message-data-name"><i class="fa fa-circle online"></i> Vincent</span>
-                                <span class="message-data-time">10:12 AM, Today</span>
+                                <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                                <span class="message-data-time">Today</span>
                             </div>
                             <div class="message my-message">
-                                Are we meeting today? Project has been already finished and I have results to show you.
+                                Halo! Untuk melihat daftar bantuan tulis help
                             </div>
                         </li>
                     </ul>
@@ -66,15 +55,15 @@
                 </div> <!-- end chat-history -->
             
                 <div class="chat-message clearfix">
-                    <iframe name="votar" style="display:none;"></iframe>
-                    <form action="/" method="POST" target="votar">
+                    <!-- <iframe name="votar" style="display:none;"></iframe> -->
+                    <form id="messageForm">
                         @csrf
                         <textarea name="value" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
                                 
                         <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
                         <i class="fa fa-file-image-o"></i>
                         
-                        <button type="submit">Send</button>
+                        <button type="submit" class="submit-btn">Send</button>
                     <form>
                 </div> <!-- end chat-message -->
             
@@ -88,7 +77,7 @@
                     <span class="message-data-name" >User</span> <i class="fa fa-circle me"></i>
                 </div>
                 <div class="message other-message float-right">
-                    Halo
+                    @{{messageOutput}}
                 </div>
             </li>
         </script>
@@ -100,93 +89,98 @@
                     <span class="message-data-time">Today</span>
                 </div>
                 <div class="message my-message">
-                    chat
+                    @{{response}}
                 </div>
             </li>
         </script>
 
-        <script >
-            (function(){
-                var chat = {
-                    messageToSend: '',
-                    messageResponses: [
-                        'Why did the web developer leave the restaurant? Because of the table layout.',
-                        'How do you comfort a JavaScript bug? You console it.',
-                        'An SQL query enters a bar, approaches two tables and asks: "May I join you?"',
-                        'What is the most used language in programming? Profanity.',
-                        'What is the object-oriented way to become wealthy? Inheritance.',
-                        'An SEO expert walks into a bar, bars, pub, tavern, public house, Irish pub, drinks, beer, alcohol'
-                    ],
-                    init: function() {
-                        this.cacheDOM();
-                        this.bindEvents();
-                        this.render();
-                    },
-                    cacheDOM: function() {
-                        this.$chatHistory = $('.chat-history');
-                        this.$button = $('button');
-                        this.$textarea = $('#message-to-send');
-                        this.$chatHistoryList =  this.$chatHistory.find('ul');
-                    },
-                    bindEvents: function() {
-                        this.$button.on('click', this.addMessage.bind(this));
-                        this.$textarea.on('keyup', this.addMessageEnter.bind(this));
-                    },
-                    render: function() {
+        <script>
+            var chat = {
+                init: function(message, response) {
+                    this.cacheDOM();
+                    this.render(message, response);
+                },
+                cacheDOM: function() {
+                    this.$chatHistory = $('.chat-history');
+                    this.$button = $('button');
+                    this.$textarea = $('#message-to-send');
+                    this.$chatHistoryList =  this.$chatHistory.find('ul');
+                },
+                render: function(message, response) {
+                    this.scrollToBottom();
+                    var template = Handlebars.compile( $("#message-template").html());
+                    var context = { 
+                        messageOutput: message
+                    };
+
+                    this.$chatHistoryList.append(template(context));
+                    this.scrollToBottom();
+                    
+                    // responses
+                    var templateResponse = Handlebars.compile( $("#message-response-template").html());
+                    var contextResponse = { 
+                        response: response
+                    };
+                    
+                    setTimeout(function() {
+                        this.$chatHistoryList.append(templateResponse(contextResponse));
                         this.scrollToBottom();
-                        if (this.messageToSend.trim() !== '') {
-                            var template = Handlebars.compile( $("#message-template").html());
-                            var context = { 
-                                messageOutput: this.messageToSend,
-                                time: this.getCurrentTime()
-                            };
+                    }.bind(this), 1500);
+                },
+                scrollToBottom: function() {
+                    this.$chatHistory.scrollTop(this.$chatHistory[0].scrollHeight);
+                },
+            };
+        </script>
 
-                            this.$chatHistoryList.append(template(context));
-                            this.scrollToBottom();
-                            // this.$textarea.val('');
-                            
-                            // responses
-                            var templateResponse = Handlebars.compile( $("#message-response-template").html());
-                            var contextResponse = { 
-                                response: this.getRandomItem(this.messageResponses),
-                                time: this.getCurrentTime()
-                            };
-                            
-                            setTimeout(function() {
-                                this.$chatHistoryList.append(templateResponse(contextResponse));
-                                this.scrollToBottom();
-                            }.bind(this), 1500);
-                        }
-                    
-                    },
-                    
-                    addMessage: function() {
-                        this.messageToSend = this.$textarea.val()
-                        this.render();        
-                    },
+        <script>
+            $("#messageForm").on('submit', function(event){
+                event.preventDefault();
 
-                    addMessageEnter: function(event) {
-                        // enter was pressed
-                        if (event.keyCode === 13) {
-                            this.addMessage();
-                        }
+                let message = $.trim($("#message-to-send").val());
+                let _token   = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: "/",
+                    type:"POST",
+                    data:{
+                        message:message,
+                        "_token": "{{ csrf_token() }}",
                     },
-                    scrollToBottom: function() {
-                        this.$chatHistory.scrollTop(this.$chatHistory[0].scrollHeight);
+                    success:function(response){
+                        console.log(response.msg)
+                        chat.init(message, response.msg);
+                        let template = Handlebars.compile( $("#message-template").html());
+                        $("#message-to-send").val('');
                     },
-                    getCurrentTime: function() {
-                        return new Date().toLocaleTimeString().
-                            replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
-                    },
-                    getRandomItem: function(arr) {
-                        return arr[Math.floor(Math.random()*arr.length)];
-                    }
-                    
-                };
-                
-                chat.init();
-            })();
-        
+                });
+            });
+        </script>
+
+        <script>
+            $('#message-to-send').on('keyup', function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+
+                    let message = $.trim($("#message-to-send").val());
+                    let _token   = $('meta[name="csrf-token"]').attr('content');
+
+                    $.ajax({
+                        url: "/",
+                        type:"POST",
+                        data:{
+                            message:message,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success:function(response){
+                            console.log(response)
+                            chat.init(message, response.msg);
+                            let template = Handlebars.compile( $("#message-template").html());
+                            $("#message-to-send").val('');
+                        },
+                    });   
+                }
+            });
         </script>
     </body>
 </html>
