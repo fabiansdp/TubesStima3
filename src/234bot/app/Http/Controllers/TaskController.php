@@ -100,9 +100,9 @@ class TaskController extends Controller
             $task = new Task;
             $task->user_id = 1; // sementara
             $task->deadline = $tanggal[0];
-            $task->mata_kuliah = $matkul[0];
+            $task->mata_kuliah = strtoupper($matkul[0]);
             $task->jenis_task = ucwords(strtolower($jenis[0]));
-            $task->topik = $topik[2];
+            $task->topik = ucwords($topik[2]);
             $task->save();
 
             return redirect('/');
@@ -138,7 +138,7 @@ class TaskController extends Controller
             }
 
             // 6 
-            else if (TaskController::KMPSearch("bisa", $fromreq))
+            else if (TaskController::KMPSearch("help", strtolower($fromreq)))
                 echo "help";
             else 
                 echo "maaf command tidak diketahui";
