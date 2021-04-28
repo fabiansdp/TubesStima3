@@ -85,32 +85,47 @@ class TaskController extends Controller
         return Task::all();
     }
 
-    function addTask(Request $req){
+    function addTask($userid, $deadline, $matkul, $jenis, $topik) {
+        $task = new Task;
+        $task->user_id = $userid; // sementara
+        $task->deadline = $deadline;
+        $task->mata_kuliah = $matkul;
+        $task->jenis_task = $jenis;
+        $task->topik = $topik;
+        $task->save();
+    }
+
+    function updateTask($taskID, $tanggal) {
+        $task = Task::findOrFail($taskID);
+        $task->deadline = $tanggal;
+        $task->save();
+    }
+
+    function deleteTask($taskID) {
+        $task = Task::findOrFail($taskID);
+        $task->delete();
+    }
+
+    function decideTask(Request $req){
         // asumsi sudah login
         $user_id = $req->user()->id;
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
-        $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
+        $jenisTugasPattern = '/kuis|praktikum|tu(bes|cil)|ujian/';
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
         $topikPattern = '/([0-9]{4}\s)(.*)[\s][0-9]{4}\b/';
-        $fromreq = $req->value;
+        $taskIdPattern = '/task (\d+)/';
+        $fromreq = strtolower($req->value);
 
         if (preg_match($kodeMatkulPattern, $fromreq, $matkul) 
             && preg_match($jenisTugasPattern, $fromreq, $jenis) 
             && preg_match($tanggalPattern, $fromreq, $tanggal)
         ) {
             preg_match($topikPattern, $fromreq, $topik);
-            $task = new Task;
-            $task->user_id = $user_id;
-            $task->deadline = $tanggal[0];
-            $task->mata_kuliah = strtoupper($matkul[0]);
-            $task->jenis_task = ucwords(strtolower($jenis[0]));
-            $task->topik = ucwords($topik[2]);
-            $task->save();
+            TaskController::addTask($user_id, $tanggal[0], strtoupper($matkul[0]), ucwords(strtolower($jenis[0])), ucwords($topik[2]));
 
-            return redirect('/');
+            return back();
         } else {
             if (TaskController::KMPSearch("deadline", $fromreq)) {
-                echo "deadline";
                 // 2
                 if (TaskController::KMPSearch("sejauh", $fromreq))
                     echo "sejauh";
@@ -129,19 +144,28 @@ class TaskController extends Controller
                 // 3
                 else if (TaskController::KMPSearch("kapan", $fromreq))
                     echo "kapan loh";
-
-                // 4
-                else if (TaskController::KMPSearch("diundur", $fromreq))
-                    echo "diundur";
-
-                // 5
-                else if (TaskController::KMPSearch("selesai", $fromreq))
-                    echo "selesai";
             }
 
-            // 6 
-            else if (TaskController::KMPSearch("help", strtolower($fromreq)))
+            // Pembaharuan task
+            if ((TaskController::KMPSearch("diundur", $fromreq) || TaskController::KMPSearch("dimajukan", $fromreq))
+                && preg_match($taskIdPattern, $fromreq, $taskID)
+                && preg_match($tanggalPattern, $fromreq, $tanggal)
+            ) {
+                TaskController::updateTask($taskID[1], $tanggal[0]);
+                return back();
+            }
+
+            // Delete task
+            else if (TaskController::KMPSearch("selesai", $fromreq) && preg_match($taskIdPattern, $fromreq, $taskID)) {
+                TaskController::deleteTask($taskID[1]);
+                return back();
+            }
+
+            // Help Command
+            else if (TaskController::KMPSearch("help", $fromreq))
                 echo "help";
+
+            // Maaf tidak tahu command
             else 
                 echo "maaf command tidak diketahui";
             // return redirect("/");
