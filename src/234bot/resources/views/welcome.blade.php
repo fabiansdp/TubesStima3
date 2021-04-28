@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>ChatBot</title>
+        <title>234bot</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
                     <ul>
                         <li>
                             <div class="message-data">
-                                <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                                <span class="message-data-name"><i class="fa fa-circle online"></i>234bot</span>
                                 <span class="message-data-time">Today</span>
                             </div>
                             <div class="message my-message">
