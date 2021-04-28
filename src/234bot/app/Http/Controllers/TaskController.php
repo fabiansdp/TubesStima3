@@ -95,11 +95,18 @@ class TaskController extends Controller
         $task->save();
     }
 
+    function updateTask($taskID, $tanggal) {
+        $task = Task::findOrFail($taskID);
+        $task->deadline = $tanggal;
+        $task->save();
+    }
+
     function decideTask(Request $req){
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
         $topikPattern = '/([0-9]{4}\s)(.*)[\s][0-9]{4}\b/';
+        $taskIdPattern = '/task (\d+)/';
         $fromreq = $req->value;
 
         if (preg_match($kodeMatkulPattern, $fromreq, $matkul) 
@@ -112,7 +119,6 @@ class TaskController extends Controller
             return redirect('/');
         } else {
             if (TaskController::KMPSearch("deadline", $fromreq)) {
-                echo "deadline";
                 // 2
                 if (TaskController::KMPSearch("sejauh", $fromreq))
                     echo "sejauh";
@@ -132,18 +138,24 @@ class TaskController extends Controller
                 else if (TaskController::KMPSearch("kapan", $fromreq))
                     echo "kapan loh";
 
-                // 4
-                else if (TaskController::KMPSearch("diundur", $fromreq))
-                    echo "diundur";
-
-                // 5
-                else if (TaskController::KMPSearch("selesai", $fromreq))
-                    echo "selesai";
+            }
+            
+            // Pembaharuan task
+            if ((TaskController::KMPSearch("diundur", strtolower($fromreq)) || TaskController::KMPSearch("dimajukan", strtolower($fromreq)))
+                && preg_match($taskIdPattern, $fromreq, $taskID)
+                && preg_match($tanggalPattern, $fromreq, $tanggal)
+            ) {
+                TaskController::updateTask($taskID[1], $tanggal[0]);
+                return redirect("/");
             }
 
-            // 6 
+            else if (TaskController::KMPSearch("selesai", strtolower($fromreq))) {
+                echo "task selesai";
+            }
+
             else if (TaskController::KMPSearch("help", strtolower($fromreq)))
                 echo "help";
+
             else 
                 echo "maaf command tidak diketahui";
             // return redirect("/");
