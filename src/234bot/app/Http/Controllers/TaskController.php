@@ -100,9 +100,29 @@ class TaskController extends Controller
             ->where('user_id', $user_id)
             ->where('jenis_task', $jenis)
             ->where('mata_kuliah', $matkul)
+            ->orderBy('deadline')
             ->get();
         return response()->json([
             'type' => 'Deadline Matkul',
+            'data' => $task
+        ]);
+    }
+
+    function getDl($user_id, $jenis=NULL){
+        if ($jenis == NULL){
+            $task = DB::table('tasks')
+                ->where('user_id',$user_id)
+                ->orderBy('deadline')
+                ->get();
+        } else {
+            $task = DB::table('tasks')
+                ->where('jenis_task', $jenis)
+                ->where('user_id', $user_id)
+                ->orderBy('deadline')
+                ->get();
+        }
+        return response()->json([
+            'type' => 'Deadline By Date',
             'data' => $task
         ]);
     }
@@ -178,9 +198,12 @@ class TaskController extends Controller
 
         } else {
             if (TaskController::KMPSearch("deadline", $fromreq)) {
-                // 2
-                if (TaskController::KMPSearch("sejauh", $fromreq))
-                    echo "sejauh";
+                if (TaskController::KMPSearch("sejauh", $fromreq)){
+                    if (preg_match($jenisTugasPattern, $fromreq, $jenis))
+                        TaskController::getDl($user_id,$jenis[0]);
+                    else
+                        TaskController::getDl($user_id);
+                }
                 else if (TaskController::KMPSearch("antara", $fromreq))
                     echo "antara";
                 else if (TaskController::KMPSearch("depan", $fromreq)){
@@ -190,10 +213,13 @@ class TaskController extends Controller
                         echo "hari";
                     echo "depan";
                 }
-                else if (TaskController::KMPSearch("hari ini", $fromreq))
-                    echo "hari ini";
-
-                // 3
+                else if (TaskController::KMPSearch("hari ini", $fromreq)){
+                    $currDate = date("Y-m-d");
+                    if (preg_match($jenisTugasPattern, $fromreq, $jenis))
+                        TaskController::getDlBetweenDates($user_id,$currDate,$currDate, $jenis[0]);
+                    else
+                        TaskController::getDlBetweenDates($user_id,$currDate,$currDate);
+                }
                 else if (TaskController::KMPSearch("kapan", $fromreq) && preg_match($kodeMatkulPattern, $fromreq, $matkul) 
                 && preg_match($jenisTugasPattern, $fromreq, $jenis)){
                     TaskController::showDlTask($user_id,$jenis,$matkul);
