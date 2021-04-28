@@ -45,9 +45,10 @@ Clone repository ini dan masukkan command sebagai berikut:
 cd src/234bot
 composer install
 ```
-Salin file .env dan masukkan kredensial database sql beserta generate app key melalui command di bawah:
+Salin file .env dan masukkan kredensial database sql beserta generate app key dan melakukan migrasi database melalui command di bawah:
 ```bash
 php artisan key:generate
+php artisan migrate
 ```
 Jalankan aplikasi melalui command
 ```bash
