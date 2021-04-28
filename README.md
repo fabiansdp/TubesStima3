@@ -5,6 +5,7 @@
 * [Kontributor](#kontributor)
 * [Penjelasan](#penjelasan)
 * [Spesifikasi](#spesifikasi)
+* [Daftar Kata Penting](#daftar-kata-penting)
 * [Cara Pengunaan](#cara_penggunaan)
 
 ## Kontributor
@@ -22,7 +23,21 @@ deadline tugas-tugas yang ada.
 
 ## Spesifikasi
 Aplikasi memiliki fitur-fitur sebagai berikut:
+- Fitur Register
+- Fitur Login
+- Fitur menambahkan task
+- Fitur melihat task yang tersedia
+- Fitur menampilkan deadline untuk task tertentu
+- Fitur mengupdate deadline dari suatu task tertentu
+- Fitur menandai task selesai dikerjakan
+- Fitur menampilkan opsi help
 
+## Daftar Kata Penting
+* Tubes
+* Tucil
+* Kuis
+* Ujian
+* Praktikum
 
 ## Cara Penggunaan
 Clone repository ini dan masukkan command sebagai berikut:
