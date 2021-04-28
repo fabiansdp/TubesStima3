@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -79,6 +80,18 @@ class TaskController extends Controller
                 }
             }
         }
+    }
+
+    function find_by_id($id, $jenis=NULL){
+        if ($jenis != NULL)
+            $task = DB::table("tasks")->where("id", $id)->where("jenis_task", $jenis);
+        else $task = DB::table("tasks")->where("id", $id);
+        return $task;
+    }
+
+    function find_by_jenis($jenis){
+        $task = DB::table("tasks")->where("jenis_task", $jenis);
+        return $task;
     }
 
     function getTask(){
