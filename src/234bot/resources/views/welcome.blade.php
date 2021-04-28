@@ -33,8 +33,8 @@
                     <img src="rafif.jpg" alt="avatar" width="48px"/>
                     
                     <div class="chat-about">
-                        <div class="chat-with">ChatBot Tugas</div>
-                        <div class="chat-num-messages">Mencatat Tugas</div>
+                        <div class="chat-with">234bot</div>
+                        <div class="chat-num-messages">Ngingetin Kamu</div>
                     </div>
                     <i class="fa fa-star"></i>
                 </div> <!-- end chat-header -->
@@ -85,7 +85,7 @@
         <script id="message-response-template" type="text/x-handlebars-template">
             <li>
                 <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>234bot</span>
                     <span class="message-data-time">@{{time}}, Today</span>
                 </div>
                 <div class="message my-message">
@@ -97,7 +97,7 @@
         <script id="message-response-template2" type="text/x-handlebars-template">
             <li>
                 <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>234bot</span>
                     <span class="message-data-time">@{{time}}, Today</span>
                 </div>
                 <div class="message my-message">
@@ -117,7 +117,7 @@
         <script id="message-response-template3" type="text/x-handlebars-template">
             <li>
                 <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i>ChatBot</span>
+                    <span class="message-data-name"><i class="fa fa-circle online"></i>234bot</span>
                     <span class="message-data-time">@{{time}}, Today</span>
                 </div>
                 <div class="message my-message">
@@ -144,7 +144,7 @@
                     <p>Fitur</p>
                     <ol>
                         <li>
-                            <p>Menambahkan tugas baru</p>
+                            <p>Menambahkan tugas baru (format tanggal yyyy-mm-dd)</p>
                         </li>
                         <li>
                             <p>Melihat daftar tugas keseluruhan, berdasarkan waktu, dan berdasarkan jenis tugas</p>
