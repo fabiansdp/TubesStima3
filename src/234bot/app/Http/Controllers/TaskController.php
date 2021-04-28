@@ -167,7 +167,6 @@ class TaskController extends Controller
     }
 
     function decideTask(Request $req){
-        // asumsi sudah login
         $user_id = $req->user()->id;
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/kuis|praktikum|tu(bes|cil)|ujian/';
@@ -273,7 +272,7 @@ class TaskController extends Controller
                 $currDate = date("Y-m-d");
                 if (TaskController::KMPSearch("minggu", $fromreq)){
                     $N= array_search("minggu",$STR);
-                    $N= $N-1;
+                    $N= $STR[$N-1];
                     $date = date("Y-m-d", strtotime("+$N week"));
                     if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
                         $task = TaskController::getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
@@ -295,7 +294,7 @@ class TaskController extends Controller
                 }
                 else if (TaskController::KMPSearch("hari", $fromreq)){
                     $N= array_search("hari",$STR);
-                    $N= $N-1;
+                    $N= $STR[$N-1];
                     $date = date("Y-m-d", strtotime("+$N day"));
                     if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
                         $task = TaskController::getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
