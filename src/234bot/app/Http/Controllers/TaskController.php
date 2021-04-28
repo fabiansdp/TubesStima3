@@ -204,8 +204,26 @@ class TaskController extends Controller
                     else
                         TaskController::getDl($user_id);
                 }
-                else if (TaskController::KMPSearch("antara", $fromreq))
-                    echo "antara";
+                else if (TaskController::KMPSearch("antara", $fromreq)&&preg_match_all($tanggalPattern, $fromreq, $tanggal)){
+                    $dateTimestamp1 = $tanggal[0][0];
+                    $dateTimestamp2 = $tanggal[0][1];
+                    if ($dateTimestamp1 > $dateTimestamp2){
+                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                            getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1, $jenis[0]);
+                        }
+                        else{
+                            getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1);
+                        }
+                    }
+                    else{
+                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                            getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2, $jenis[0]);
+                        }
+                        else{
+                            getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2);
+                        }
+                    }
+                }
                 else if (TaskController::KMPSearch("depan", $fromreq)){
                     if (TaskController::KMPSearch("minggu", $fromreq))
                         echo "minggu";
