@@ -114,7 +114,7 @@ class TaskController extends Controller
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
         $topikPattern = '/([0-9]{4}\s)(.*)[\s][0-9]{4}\b/';
         $taskIdPattern = '/task (\d+)/';
-        $fromreq = strtolower($req->value);
+        $fromreq = strtolower($req->message);
 
         if (preg_match($kodeMatkulPattern, $fromreq, $matkul) 
             && preg_match($jenisTugasPattern, $fromreq, $jenis) 
@@ -123,7 +123,7 @@ class TaskController extends Controller
             preg_match($topikPattern, $fromreq, $topik);
             TaskController::addTask($user_id, $tanggal[0], strtoupper($matkul[0]), ucwords(strtolower($jenis[0])), ucwords($topik[2]));
 
-            return back();
+            return response()->json(['msg' => 'Task telah dimasukkan']);
         } else {
             if (TaskController::KMPSearch("deadline", $fromreq)) {
                 // 2
@@ -166,8 +166,9 @@ class TaskController extends Controller
                 echo "help";
 
             // Maaf tidak tahu command
-            else 
-                echo "maaf command tidak diketahui";
+            else {
+                return response()->json(['msg' => 'Maaf command tidak diketahui']);
+            }
             // return redirect("/");
         }
     }
