@@ -86,6 +86,8 @@ class TaskController extends Controller
     }
 
     function addTask(Request $req){
+        // asumsi sudah login
+        $user_id = $req->user()->id;
         $kodeMatkulPattern = '/[a-zA-z]{2}[0-9]{4}\s/';
         $jenisTugasPattern = '/[kK][uU][iI][sS]|[pP][rR][aA][kK][tT][iI][kK][uU][mM]|[tT][uU]([bB][eE][sS]|[cC][iI][lL])|[uU][jJ][iI][aA][nN]/';
         $tanggalPattern = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
@@ -98,7 +100,7 @@ class TaskController extends Controller
         ) {
             preg_match($topikPattern, $fromreq, $topik);
             $task = new Task;
-            $task->user_id = 1; // sementara
+            $task->user_id = $user_id;
             $task->deadline = $tanggal[0];
             $task->mata_kuliah = $matkul[0];
             $task->jenis_task = ucwords(strtolower($jenis[0]));
