@@ -93,6 +93,44 @@ class TaskController extends Controller
         $task = DB::table("tasks")->where("jenis_task", $jenis);
         return $task;
     }
+    
+    function showDlTask($user_id, $jenis, $matkul){
+        $task = DB::table('tasks')
+            ->select('deadline','topik')
+            ->where('user_id', $user_id)
+            ->where('jenis_task', $jenis)
+            ->where('mata_kuliah', $matkul)
+            ->get();
+        return response()->json([
+            'type' => 'Deadline Matkul',
+            'data' => $task
+        ]);
+    }
+
+    function getDlBetweenDates($tanggal1,$tanggal2){
+        $task = DB::table('tasks')
+            ->whereBetween('deadline', [$tanggal1,$tanggal2])
+            ->orderBy('deadline')
+            ->get();
+        return response()->json([
+            'type' => 'Deadline By Date',
+            'data' => $task
+        ]);
+
+    }
+
+    function getJenisDlBetweenDates($tanggal1,$tanggal2, $jenis){
+        $task = DB::table('tasks')
+            ->where('jenis_task', $jenis)
+            ->whereBetween('deadline', [$tanggal1,$tanggal2])
+            ->orderBy('deadline')
+            ->get();
+        return response()->json([
+            'type' => 'Deadline By Date',
+            'data' => $task
+        ]);
+
+    }
 
     function getTask(){
         return Task::all();
@@ -159,8 +197,10 @@ class TaskController extends Controller
                     echo "hari ini";
 
                 // 3
-                else if (TaskController::KMPSearch("kapan", $fromreq))
-                    echo "kapan loh";
+                else if (TaskController::KMPSearch("kapan", $fromreq) && preg_match($kodeMatkulPattern, $fromreq, $matkul) 
+                && preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                    TaskController::showDlTask($user_id,$jenis,$matkul);
+                }
             }
 
             // Pembaharuan task
