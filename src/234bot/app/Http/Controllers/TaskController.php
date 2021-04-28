@@ -98,10 +98,10 @@ class TaskController extends Controller
         ) {
             preg_match($topikPattern, $fromreq, $topik);
             $task = new Task;
-            $task->user_id = 0; // sementara
+            $task->user_id = 1; // sementara
             $task->deadline = $tanggal[0];
             $task->mata_kuliah = $matkul[0];
-            $task->jenis_topik = ucwords(strtolower($jenis[0]));
+            $task->jenis_task = ucwords(strtolower($jenis[0]));
             $task->topik = $topik[2];
             $task->save();
 
