@@ -102,10 +102,8 @@ class TaskController extends Controller
             ->where('mata_kuliah', $matkul)
             ->orderBy('deadline')
             ->get();
-        return response()->json([
-            'type' => 'Deadline Matkul',
-            'data' => $task
-        ]);
+        
+        return $task;
     }
 
     function getDl($user_id, $jenis=NULL){
@@ -121,10 +119,7 @@ class TaskController extends Controller
                 ->orderBy('deadline')
                 ->get();
         }
-        return response()->json([
-            'type' => 'Deadline By Date',
-            'data' => $task
-        ]);
+        return $task;
     }
 
     function getDlBetweenDates($user_id,$tanggal1,$tanggal2, $jenis=NULL){
@@ -142,11 +137,7 @@ class TaskController extends Controller
                 ->orderBy('deadline')
                 ->get();
         }
-        return response()->json([
-            'type' => 'Deadline By Date',
-            'data' => $task
-        ]);
-
+        return $task;
     }
 
     function getTask(){
@@ -196,110 +187,179 @@ class TaskController extends Controller
                 'msg' => 'Task telah dimasukkan'
             ]);
 
-        } else {
-            if (TaskController::KMPSearch("deadline", $fromreq)) {
-                if (TaskController::KMPSearch("sejauh", $fromreq)){
-                    if (preg_match($jenisTugasPattern, $fromreq, $jenis))
-                        TaskController::getDl($user_id,$jenis[0]);
-                    else
-                        TaskController::getDl($user_id);
+        }
+        // Pembaharuan task
+        else if ((TaskController::KMPSearch("diundur", $fromreq) || TaskController::KMPSearch("dimajukan", $fromreq))
+            && preg_match($taskIdPattern, $fromreq, $taskID)
+            && preg_match($tanggalPattern, $fromreq, $tanggal)
+        ) {
+            TaskController::updateTask($taskID[1], $tanggal[0]);
+            return response()->json([
+                'type' => 'updateTask',
+                'msg' => 'Task telah diupdate'
+            ]);
+        }
+        
+        // Delete task
+        else if (TaskController::KMPSearch("selesai", $fromreq) && preg_match($taskIdPattern, $fromreq, $taskID)) {
+            TaskController::deleteTask($taskID[1]);
+            return response()->json([
+                'type' => 'selesaiTask',
+                'msg' => 'Task telah diselesaikan'
+            ]);
+        } 
+        
+        // Perhitungan deadline
+        else if (TaskController::KMPSearch("deadline", $fromreq)) {
+            if (TaskController::KMPSearch("sejauh", $fromreq)){
+                if (preg_match($jenisTugasPattern, $fromreq, $jenis)) {
+                    $task = TaskController::getDl($user_id,$jenis[0]);
+
+                    return response()->json([
+                        'type' => 'deadline',
+                        'data' => $task
+                    ]);
                 }
-                else if (TaskController::KMPSearch("antara", $fromreq)&&preg_match_all($tanggalPattern, $fromreq, $tanggal)){
-                    $dateTimestamp1 = $tanggal[0][0];
-                    $dateTimestamp2 = $tanggal[0][1];
-                    if ($dateTimestamp1 > $dateTimestamp2){
-                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
-                            getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1, $jenis[0]);
-                        }
-                        else{
-                            getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1);
-                        }
+                else {
+                    $task = TaskController::getDl($user_id);
+
+                    return response()->json([
+                        'type' => 'deadline',
+                        'data' => $task
+                    ]);
+                }
+            }
+            else if (TaskController::KMPSearch("antara", $fromreq)&&preg_match_all($tanggalPattern, $fromreq, $tanggal)){
+                $dateTimestamp1 = $tanggal[0][0];
+                $dateTimestamp2 = $tanggal[0][1];
+                if ($dateTimestamp1 > $dateTimestamp2){
+                    if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                        $task = TaskController::getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1, $jenis[0]);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
                     }
                     else{
-                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
-                            getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2, $jenis[0]);
-                        }
-                        else{
-                            getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2);
-                        }
+                        $task = TaskController::getDlBetweenDates($user_id,$dateTimestamp2,$dateTimestamp1);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
                     }
-                else if (TaskController::KMPSearch("depan", $fromreq)){
-                    $STR = explode(" ", $fromreq);
-                    $currDate = date("Y-m-d");
-                    if (TaskController::KMPSearch("minggu", $fromreq)){
-                        $N= array_search("minggu",$STR);
-                        $N= $N-1;
-                        $date = date("Y-m-d", strtotime("+$N week"));
-                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
-                            getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
-                        }
-                        else{
-                            getDlBetweenDates($user_id,$currDate,$date);
-                        }
+                }
+                else {
+                    if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                        $task = TaskController::getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2, $jenis[0]);
                         
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
                     }
-                    else if (TaskController::KMPSearch("hari", $fromreq)){
-                        $N= array_search("hari",$STR);
-                        $N= $N-1;
-                        $date = date("Y-m-d", strtotime("+$N day"));
-                        if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
-                            getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
-                        }
-                        else{
-                            getDlBetweenDates($user_id,$currDate,$date);
-                        }
-                    } 
+                    else{
+                        $task = TaskController::getDlBetweenDates($user_id,$dateTimestamp1,$dateTimestamp2);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
+                    }
                 }
-                else if (TaskController::KMPSearch("hari ini", $fromreq)){
-                    $currDate = date("Y-m-d");
-                    if (preg_match($jenisTugasPattern, $fromreq, $jenis))
-                        TaskController::getDlBetweenDates($user_id,$currDate,$currDate, $jenis[0]);
-                    else
-                        TaskController::getDlBetweenDates($user_id,$currDate,$currDate);
+            } else if (TaskController::KMPSearch("depan", $fromreq)){
+                $STR = explode(" ", $fromreq);
+                $currDate = date("Y-m-d");
+                if (TaskController::KMPSearch("minggu", $fromreq)){
+                    $N= array_search("minggu",$STR);
+                    $N= $N-1;
+                    $date = date("Y-m-d", strtotime("+$N week"));
+                    if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                        $task = TaskController::getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
+                    }
+                    else{
+                        $task = TaskController::getDlBetweenDates($user_id,$currDate,$date);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
+                    }
+                    
                 }
-                else if (TaskController::KMPSearch("kapan", $fromreq) && preg_match($kodeMatkulPattern, $fromreq, $matkul) 
-                && preg_match($jenisTugasPattern, $fromreq, $jenis)){
-                    TaskController::showDlTask($user_id,$jenis,$matkul);
+                else if (TaskController::KMPSearch("hari", $fromreq)){
+                    $N= array_search("hari",$STR);
+                    $N= $N-1;
+                    $date = date("Y-m-d", strtotime("+$N day"));
+                    if(preg_match($jenisTugasPattern, $fromreq, $jenis)){
+                        $task = TaskController::getDlBetweenDates($user_id,$currDate,$date,$jenis[0]);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
+                    }
+                    else{
+                        $task = TaskController::getDlBetweenDates($user_id,$currDate,$date);
+
+                        return response()->json([
+                            'type' => 'deadline',
+                            'data' => $task
+                        ]);
+                    }
+                } 
+            }
+            else if (TaskController::KMPSearch("hari ini", $fromreq)) {
+                $currDate = date("Y-m-d");
+                if (preg_match($jenisTugasPattern, $fromreq, $jenis)) {
+                    $task = TaskController::getDlBetweenDates($user_id,$currDate,$currDate, $jenis[0]);
+
+                    return response()->json([
+                        'type' => 'deadline',
+                        'data' => $task
+                    ]);
+                } 
+                else {
+                    $task = TaskController::getDlBetweenDates($user_id,$currDate,$currDate);
+
+                    return response()->json([
+                        'type' => 'deadline',
+                        'data' => $task
+                    ]);
                 }
             }
+            else if (TaskController::KMPSearch("kapan", $fromreq) 
+                && preg_match($kodeMatkulPattern, $fromreq, $matkul) 
+                && preg_match($jenisTugasPattern, $fromreq, $jenis)) 
+            {
+                $task = TaskController::showDlTask($user_id,$jenis,$matkul);
 
-            // Pembaharuan task
-            if ((TaskController::KMPSearch("diundur", $fromreq) || TaskController::KMPSearch("dimajukan", $fromreq))
-                && preg_match($taskIdPattern, $fromreq, $taskID)
-                && preg_match($tanggalPattern, $fromreq, $tanggal)
-            ) {
-                TaskController::updateTask($taskID[1], $tanggal[0]);
                 return response()->json([
-                    'type' => 'updateTask',
-                    'msg' => 'Task telah diupdate'
+                    'type' => 'deadline',
+                    'data' => $task
                 ]);
             }
+        }
+        // Help Command
+        else if (TaskController::KMPSearch("help", $fromreq)) {
+            return response()->json([
+                'type' => 'help',
+                'msg' => 'Tulis Help'
+            ]);
+        }
 
-            // Delete task
-            else if (TaskController::KMPSearch("selesai", $fromreq) && preg_match($taskIdPattern, $fromreq, $taskID)) {
-                TaskController::deleteTask($taskID[1]);
-                return response()->json([
-                    'type' => 'selesaiTask',
-                    'msg' => 'Task telah diselesaikan'
-                ]);
-            }
-
-            // Help Command
-            else if (TaskController::KMPSearch("help", $fromreq)) {
-                return response()->json([
-                    'type' => 'help',
-                    'msg' => 'Tulis Help'
-                ]);
-            }
-
-            // Maaf tidak tahu command
-            else {
-                return response()->json([
-                    'type' => 'nocommand',
-                    'msg' => 'Maaf command tidak diketahui'
-                ]);
-            }
-            // return redirect("/");
+        // Maaf tidak tahu command
+        else {
+            return response()->json([
+                'type' => 'nocommand',
+                'msg' => 'Maaf command tidak diketahui'
+            ]);
         }
     }
 }

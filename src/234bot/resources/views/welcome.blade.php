@@ -138,19 +138,21 @@
                 event.preventDefault();
 
                 let message = $.trim($("#message-to-send").val());
-                let _token   = $('meta[name="csrf-token"]').attr('content');
 
                 $.ajax({
                     url: "/",
                     type:"POST",
                     data:{
-                        message:message,
+                        message : message,
                         "_token": "{{ csrf_token() }}",
                     },
                     success:function(response){
-                        console.log(response.msg)
-                        chat.init(message, response.msg);
-                        let template = Handlebars.compile( $("#message-template").html());
+                        if (response.type == "deadline") {
+                            console.log(response.data);
+                            chat.init(message, "Deadline:")
+                        } else {
+                            chat.init(message, response.msg);
+                        }
                         $("#message-to-send").val('');
                     },
                 });
@@ -163,19 +165,22 @@
                     event.preventDefault();
 
                     let message = $.trim($("#message-to-send").val());
-                    let _token   = $('meta[name="csrf-token"]').attr('content');
 
                     $.ajax({
                         url: "/",
                         type:"POST",
                         data:{
-                            message:message,
+                            message : message,
                             "_token": "{{ csrf_token() }}",
                         },
                         success:function(response){
                             console.log(response)
-                            chat.init(message, response.msg);
-                            let template = Handlebars.compile( $("#message-template").html());
+                            if (response.type == "deadline") {
+                                console.log(response.data);
+                                chat.init(message, "Deadline:")
+                            } else {
+                                chat.init(message, response.msg);
+                            }
                             $("#message-to-send").val('');
                         },
                     });   
