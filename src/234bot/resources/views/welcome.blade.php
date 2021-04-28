@@ -248,7 +248,6 @@
                         "_token": "{{ csrf_token() }}",
                     },
                     success:function(response){
-                        console.log(response.msg)
                         chat.init(message, response.type, response.msg);
                         $("#message-to-send").val('');
                     },

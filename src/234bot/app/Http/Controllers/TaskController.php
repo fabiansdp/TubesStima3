@@ -221,14 +221,6 @@ class TaskController extends Controller
                         'msg' => $task
                     ]);
                 }
-                else {
-                    $task = TaskController::getDl($user_id);
-
-                    return response()->json([
-                        'type' => 'deadline',
-                        'msg' => $task
-                    ]);
-                }
             }
             else if (TaskController::KMPSearch("antara", $fromreq)&&preg_match_all($tanggalPattern, $fromreq, $tanggal)){
                 $dateTimestamp1 = $tanggal[0][0];
@@ -343,6 +335,14 @@ class TaskController extends Controller
 
                 return response()->json([
                     'type' => 'deadlineTgl',
+                    'msg' => $task
+                ]);
+            }
+            else {
+                $task = TaskController::getDl($user_id);
+
+                return response()->json([
+                    'type' => 'deadline',
                     'msg' => $task
                 ]);
             }
