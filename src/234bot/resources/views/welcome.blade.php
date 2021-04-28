@@ -77,7 +77,7 @@
                     <span class="message-data-name" >User</span> <i class="fa fa-circle me"></i>
                 </div>
                 <div class="message other-message float-right">
-                    
+                    @{{messageOutput}}
                 </div>
             </li>
         </script>
@@ -89,17 +89,16 @@
                     <span class="message-data-time">Today</span>
                 </div>
                 <div class="message my-message">
-                    
+                    @{{response}}
                 </div>
             </li>
         </script>
 
         <script>
             var chat = {
-                init: function() {
+                init: function(message, response) {
                     this.cacheDOM();
-                    this.bindEvents();
-                    this.render();
+                    this.render(message, response);
                 },
                 cacheDOM: function() {
                     this.$chatHistory = $('.chat-history');
@@ -107,15 +106,11 @@
                     this.$textarea = $('#message-to-send');
                     this.$chatHistoryList =  this.$chatHistory.find('ul');
                 },
-                bindEvents: function() {
-                    this.$button.on('click', this.addMessage.bind(this));
-                    this.$textarea.on('keyup', this.addMessageEnter.bind(this));
-                },
-                render: function() {
+                render: function(message, response) {
                     this.scrollToBottom();
                     var template = Handlebars.compile( $("#message-template").html());
                     var context = { 
-                        messageOutput: "response"
+                        messageOutput: message
                     };
 
                     this.$chatHistoryList.append(template(context));
@@ -124,7 +119,7 @@
                     // responses
                     var templateResponse = Handlebars.compile( $("#message-response-template").html());
                     var contextResponse = { 
-                        response: "adssda"
+                        response: response
                     };
                     
                     setTimeout(function() {
@@ -132,24 +127,8 @@
                         this.scrollToBottom();
                     }.bind(this), 1500);
                 },
-                
-                addMessage: function() {
-                    this.messageToSend = this.$textarea.val()
-                    this.render();        
-                },
-
-                addMessageEnter: function(event) {
-                    // enter was pressed
-                    if (event.keyCode === 13) {
-                        this.addMessage();
-                    }
-                },
                 scrollToBottom: function() {
                     this.$chatHistory.scrollTop(this.$chatHistory[0].scrollHeight);
-                },
-                getCurrentTime: function() {
-                    return new Date().toLocaleTimeString().
-                        replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
                 },
             };
         </script>
@@ -158,12 +137,8 @@
             $("#messageForm").on('submit', function(event){
                 event.preventDefault();
 
-                chat.init();
-
                 let message = $.trim($("#message-to-send").val());
                 let _token   = $('meta[name="csrf-token"]').attr('content');
-
-                console.log(message);
 
                 $.ajax({
                     url: "/",
@@ -173,19 +148,19 @@
                         "_token": "{{ csrf_token() }}",
                     },
                     success:function(response){
-                        console.log(response)
+                        console.log(response.msg)
+                        chat.init(message, response.msg);
                         let template = Handlebars.compile( $("#message-template").html());
                         $("#message-to-send").val('');
                     },
                 });
             });
         </script>
+
         <script>
             $('#message-to-send').on('keyup', function(event) {
                 if (event.keyCode === 13) {
                     event.preventDefault();
-
-                    chat.init();
 
                     let message = $.trim($("#message-to-send").val());
                     let _token   = $('meta[name="csrf-token"]').attr('content');
@@ -199,6 +174,7 @@
                         },
                         success:function(response){
                             console.log(response)
+                            chat.init(message, response.msg);
                             let template = Handlebars.compile( $("#message-template").html());
                             $("#message-to-send").val('');
                         },
