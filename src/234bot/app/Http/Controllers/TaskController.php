@@ -220,6 +220,13 @@ class TaskController extends Controller
                         'type' => 'deadline',
                         'msg' => $task
                     ]);
+                } else {
+                    $task = TaskController::getDl($user_id);
+    
+                    return response()->json([
+                        'type' => 'deadline',
+                        'msg' => $task
+                    ]);
                 }
             }
             else if (TaskController::KMPSearch("antara", $fromreq)&&preg_match_all($tanggalPattern, $fromreq, $tanggal)){
